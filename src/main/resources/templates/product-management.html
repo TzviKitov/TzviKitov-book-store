@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Users</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+</head>
+<body>
+<div th:fragment="logout" class="logout" sec:authorize="isAuthenticated()">
+    Logged user: <span sec:authentication="name"></span> |
+    Roles: <span sec:authentication="principal.authorities"></span> |
+    <!--/* When using CSRF this needs to be a POST */-->
+    <form th:action="@{/logout}" method="post" style="display:inline">
+        <input type="submit" value="Logout"/>
+    </form>
+</div>
+
+<div class="container">
+
+    <div class="row">
+        <h2 class="my-5">Products</h2>
+        <p class="m-5"><a href="/admin/purchase" class="btn btn-primary">Purchase</a></p>
+    </div>
+
+        <div class="row">
+        <div th:switch="${products.size()}" class="col-md-6">
+            <h3 th:case="0">No products yet!</h3>
+            <div th:case="*">
+                <table class="table table-striped table-responsive-md">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Image</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Discount</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="product : ${products}">
+                        <td th:text="${product.name}"></td>
+                        <td th:text="${product.image}"></td>
+                        <td th:text="${product.quantity}"></td>
+                        <td th:text="${product.price}"></td>
+                        <td th:text="${product.discount}"></td>
+                            <!-- not recommended: using GET controller <a th:href="@{/edit/{id}(id=${user.id})}" class="btn btn-primary"><i class="fas fa-user-edit ml-2"></i></a> -->
+                        <td><a th:href="@{/admin/edit/{id}(id=${product.id})}" class="btn btn-primary"><i class="fas fa-user-times ml-2"></i></a></td>
+                        <td>
+                        <form action="#" th:action="@{/admin/delete}" th:object="${product}" method="post">
+                            <input type="hidden" name="id" th:value="${product.id}">
+                            <input class="btn btn-primary" type="submit" value="Delete" />
+                        </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="my-5"><a href="/admin/addproduct" class="btn btn-primary"><i class="fas fa-user-plus ml-2"></i></a></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
