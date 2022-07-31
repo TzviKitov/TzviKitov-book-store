@@ -32,18 +32,18 @@
         </nav>
     </div>
     <div class="row">
-        <div th:switch="${products}" class="col-md-12">
-            <h3 th:case="null">Out of stock!</h3>
+        <div th:switch="${products.size()}" class="col-md-12">
+            <h3 th:case="0">There are no products!</h3>
             <div th:case="*">
                 <h3 class="m-4">Products</h3>
                 <div class="row row row-cols-1 row-cols-md-2 p-3 g-4 bg-light m-3">
                     <span th:each="product :${products}">
                         <div class="col">
-                            <div class="card m-2" style="width: 13rem; height:20%;">
-                                <img class="card-img-top" th:src="${product.image}" alt="product image"/>
+                            <div class="card m-2" style="width: 10rem; height:100%;">
+                                <img class="card-img-top mx-4" style="width: 110px;height: 130px; " th:src="${product.image}" alt="product image"/>
                                 <!--                        https://islandpress.org/sites/default/files/default_book_cover_2015.jpg-->
                                 <div class="card-body">
-                                    <h5 class="card-title" th:text="${product.name}"></h5>
+                                    <b class="card-title" th:text="${product.name}"></b>
                                     <p class="card-text" th:text="${product.price}+'$'"></p>
                                     <!--                            <a class="btn btn-primary" th:href="@{/basket/add(id=${product.id})}">add to basket</a>-->
                                     <form action="#" th:action="@{/basket/add}" th:object="${produc}" method="post">

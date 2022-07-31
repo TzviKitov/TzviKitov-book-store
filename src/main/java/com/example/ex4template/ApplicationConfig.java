@@ -19,7 +19,7 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
 
         auth
                 .inMemoryAuthentication()
-                .withUser("admin").password(encoder.encode("admin")).roles("ADMIN");
+                .withUser("admin").password(encoder.encode("password")).roles("ADMIN");
 //                .and()
 //                .withUser("bob").password(encoder.encode("demo")).roles("USER")
 //                .and()
@@ -37,7 +37,7 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
                 //.failureUrl("/login-error") // <===============  uncomment this for a custom login page (see also the controller)
                 .and()
                 .logout()
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("/admin")
                 .and()
                 .authorizeRequests()
                 .antMatchers("/admin/**").hasRole("ADMIN")

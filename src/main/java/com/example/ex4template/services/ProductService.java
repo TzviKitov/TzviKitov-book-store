@@ -18,6 +18,7 @@ public class ProductService {
 
     @Transactional
     public void updateQuantities(ArrayList<Long> productsBasketIds) {
+        final String notExistMessage="The marked products are out of stock. You should complete the purchase and delete the missing products from the basket.";
         //int repoCounter = 1;
         for (Long id : productsBasketIds) {
             Product product = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid product Id:" + id));
@@ -26,35 +27,8 @@ public class ProductService {
             if (quantity > 0)
                 product.setQuantity(quantity - 1);
             else
-                throw new ProductNotExistException("The marked products are out of stock. You should complete the purchase and delete the missing products from the basket.");
+                throw new ProductNotExistException(notExistMessage);
             repository.save(product);
         }
     }
-//    List<Product> findFirst5ByOrderByDiscountDesc();
-//    List<Product> findByName(String name);
-//    List<Product> findByNameContaining(String partOfName);
-
-//    public void saveUser(User user) {
-//        repository.save(user);
-//    }
-
-//    public void deleteUser(long id) {
-//        repository.deleteById(id);
-//    }
-//
-//    public void deleteUser(User u) {
-//        repository.delete(u);
-//    }
-//
-//    public void updateUser(User user) {
-//        repository.save(user);
-//    }
-//
-//    public Optional<Product> getProduct(Long id) {
-//        return repository.findById(id);
-//    }
-//
-//    public List<User> getUsers() {
-//        return repository.findAll();
-//    }
 }

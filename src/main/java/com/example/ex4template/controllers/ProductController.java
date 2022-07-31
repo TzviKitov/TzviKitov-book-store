@@ -44,7 +44,7 @@ public class ProductController {
 
     @GetMapping("/admin/purchases")
     public String showPurchase(Model model){
-        model.addAttribute("purchases",purchaseRepository.findAll());
+        model.addAttribute("purchases",purchaseRepository.findAllByOrderByTimestamp());
         model.addAttribute("totalPurchases",purchaseRepository.sumAllAmounts());
         return "purchases";
     }
