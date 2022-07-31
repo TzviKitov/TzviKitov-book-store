@@ -42,11 +42,11 @@ public class ProductController {
         return "product-management";
     }
 
-    @GetMapping("/admin/purchase")
+    @GetMapping("/admin/purchases")
     public String showPurchase(Model model){
         model.addAttribute("purchases",purchaseRepository.findAll());
         model.addAttribute("totalPurchases",purchaseRepository.sumAllAmounts());
-        return "purchase";
+        return "purchases";
     }
 
     //@GetMapping("/addproduct")

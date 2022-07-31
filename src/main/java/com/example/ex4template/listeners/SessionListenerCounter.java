@@ -37,15 +37,16 @@ public class SessionListenerCounter implements HttpSessionListener {
 
     public void sessionCreated(final HttpSessionEvent event) {
         activeSessions.incrementAndGet();
-        System.out.println("******************************SessionListenerCounter +++ Total active session are " + activeSessions.get());
-
+        System.out.println("SessionListenerCounter +++ Total active session are " + activeSessions.get());
         // example of application bean accessed from session listener
 
 
     }
-@Override
+//@Override
+
+
     public void sessionDestroyed(final HttpSessionEvent event) {
         activeSessions.decrementAndGet();
-        System.out.println("*********************8SessionListenerCounter --- Total active session are " + activeSessions.get());
+        System.out.println("SessionListenerCounter --- Total active session are " + activeSessions.get());
     }
 }
