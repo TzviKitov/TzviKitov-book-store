@@ -24,10 +24,14 @@ public class Purchase {
     @Positive
     private double amount;
 
+    @NotNull
+    private String purchaserName;
+
     public Purchase(){}
 
-    public Purchase(double amount){
+    public Purchase(double amount,String purchaserName){
         this.amount = amount;
+        this.purchaserName=purchaserName;
     }
 
     public void setAmount(double amount) {
@@ -44,6 +48,9 @@ public class Purchase {
     public Timestamp getTimestamp() {
         return timestamp;
     }
+
+    public void setPurchaserName(String name){this.purchaserName=name;}
+    public  String getPurchaserName(){return purchaserName;}
 
     @Override
     public String toString() {

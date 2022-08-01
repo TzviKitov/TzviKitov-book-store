@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+//import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,11 +20,15 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
 
         auth
                 .inMemoryAuthentication()
-                .withUser("admin").password(encoder.encode("password")).roles("ADMIN");
-//                .and()
-//                .withUser("bob").password(encoder.encode("demo")).roles("USER")
-//                .and()
-//                .withUser("ted").password(encoder.encode("demo")).roles("USER","ADMIN");
+                .withUser("admin").password(encoder.encode("password")).roles("ADMIN")
+                 .and()
+                .withUser("user1").password(encoder.encode("user")).roles("USER")
+                .and()
+                .withUser("user2").password(encoder.encode("user")).roles("USER")
+                .and()
+                .withUser("user3").password(encoder.encode("user")).roles("USER");
+
+        ;
     }
 
     @Override
@@ -33,15 +38,18 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
                 //.loginPage("/login") // <=============== uncomment this for a custom login page (see also the controller)
                 //.loginProcessingUrl("/login")
                 //.defaultSuccessUrl("/shared", true)
-                .defaultSuccessUrl("/admin", true)
+                //.defaultSuccessUrl("/admin", true)
+               // .defaultSuccessUrl("/basket/payment", true)
                 //.failureUrl("/login-error") // <===============  uncomment this for a custom login page (see also the controller)
                 .and()
                 .logout()
-                .logoutSuccessUrl("/admin")
+                .logoutSuccessUrl("/")
+//                .logoutSuccessUrl("/basket")
                 .and()
+
                 .authorizeRequests()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-               // .antMatchers("/user/**").hasRole("USER")
+                .antMatchers("/basket/payment").hasRole("USER")
                // .antMatchers("/shared/**").hasAnyRole("USER", "ADMIN")
                 // custom error page for exceptions
                 .and()

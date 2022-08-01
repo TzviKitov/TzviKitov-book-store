@@ -29,6 +29,15 @@
                        aria-label="Search">
                 <button class="btn btn-outline-primary my-sm-0 my-1" type="submit">Search</button>
             </form>
+
+            <div  sec:authorize="isAuthenticated()">
+                Logged user: <b sec:authentication="name"></b>:
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <input class="btn btn-outline-primary" type="submit" value="Logout"/>
+                </form>
+            </div>
+
+
         </nav>
     </div>
     <div class="row">

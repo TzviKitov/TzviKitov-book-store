@@ -19,6 +19,14 @@
             <form th:action="@{/basket/removeall}" method="post">
                 <input class="btn btn-outline-primary" type="submit" value="Empty the basket"/>
             </form>
+
+            <div  sec:authorize="isAuthenticated()">
+                Logged user: <b sec:authentication="name"></b>:
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <input class="btn btn-outline-primary" type="submit" value="Logout"/>
+                </form>
+            </div>
+
         </nav>
     </div>
 
@@ -56,9 +64,10 @@
                     </tbody>
                 </table>
                 <h3 th:text="'Total price: '+${totalPrice}+'$'"></h3>
-                <form th:action="@{/basket/payment}" method="post">
-                    <input class="btn btn-outline-primary my-2" type="submit" value="Payment"/>
-                </form>
+                <a href="/basket/payment" class="btn btn-outline-primary my-2">Payment</a>
+<!--                <form th:action="@{/basket/payment}" method="post">-->
+<!--                    <input class="btn btn-outline-primary my-2" type="submit" value="Payment"/>-->
+<!--                </form>-->
             </div>
             <h4 th:text="${basketMessage}"></h4>
         </div>

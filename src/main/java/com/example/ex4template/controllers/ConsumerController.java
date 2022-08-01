@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -103,8 +104,13 @@ public class ConsumerController {
         return "redirect:/basket";
     }
 
-    @PostMapping("/basket/payment")
-    public String payment() throws Exception {
+    /**
+     *
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("/basket/payment")
+    public String payment(Principal principal) throws Exception {
         try {
             // this transaction will fail and throw an exception
             productService.updateQuantities(shoppingBasket.getIdProducts());
@@ -117,7 +123,7 @@ public class ConsumerController {
 //            model.addAttribute("users", userService.getUsers());
         }
         shoppingBasket.setPaymentMessage("The payment in the amount " + shoppingBasket.getTotalPrice() + "$ was made successfully!");
-        purchaseRepository.save(new Purchase(shoppingBasket.getTotalPrice()));
+        purchaseRepository.save(new Purchase(shoppingBasket.getTotalPrice(),principal.getName()));
         return emptyTheBaske();//"redirect:/basket/removeall";
        // Product product=getRepo().findById((long)6).orElseThrow(() -> new IllegalArgumentException("Invalid product Id:" + id));
 //      if((double)model.getAttribute("totalPrice")>0.00)
