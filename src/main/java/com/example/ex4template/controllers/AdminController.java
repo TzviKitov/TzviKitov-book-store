@@ -3,9 +3,7 @@ package com.example.ex4template.controllers;
 import com.example.ex4template.repo.Product;
 import com.example.ex4template.repo.ProductRepository;
 import com.example.ex4template.repo.PurchaseRepository;
-import com.example.ex4template.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,102 +11,114 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import javax.validation.Valid;
-import java.security.Principal;
 
 @Controller
-public class ProductController {
+public class AdminController {
 
-//    @Value( "${demo.coursename}" )
-//    private String someProperty;
 
     @Autowired
     private ProductRepository repository;
-    private ProductRepository getRepo() {
+    private ProductRepository getProductRepo() {
         return repository;
     }
 
     @Autowired
     private PurchaseRepository purchaseRepository;
 
-
+    /**
+     *
+     * @param model modal
+     * @return product-management page
+     */
     @GetMapping("/admin")
-    public String main(Product product, Model model, Principal principal) {
-//        model.addAttribute("course", someProperty);
-
-        // the name "users"  is bound to the VIEW
-        model.addAttribute("products", getRepo().findAll());
+    public String main(Model model) {
+        model.addAttribute("products", getProductRepo().findAll());
         return "product-management";
     }
 
+    /**
+     *
+     * @param model model
+     * @return purchases page
+     */
     @GetMapping("/admin/purchases")
-    public String showPurchase(Model model){
-        model.addAttribute("purchases",purchaseRepository.findAllByOrderByTimestamp());
-        model.addAttribute("totalPurchases",purchaseRepository.sumAllAmounts());
+    public String showPurchase(Model model) {
+        model.addAttribute("purchases", purchaseRepository.findAllByOrderByTimestamp());
+        model.addAttribute("totalPurchases", purchaseRepository.sumAllAmounts());
         return "purchases";
     }
 
-    //@GetMapping("/addproduct")
-    //public String showSignUpForm(Product product, Model model) {
-        //model.addAttribute("user", new User("noname","noemail"));
-      //  return "add-product";
-    //}
+    /**
+     *
+     * @param product current product
+     * @return add-product form
+     */
     @GetMapping("/admin/addproduct")
     public String showAddProductForm(Product product) {
         return "add-product";
     }
 
+    /**
+     *
+     * @param product update product
+     * @param result of validations
+     * @return add-product form if not valid or redirect:/admin - product-management page
+     */
     @PostMapping("/admin/addproduct")
-    public String addProduct(@Valid Product product, BindingResult result, Model model) {
+    public String addProduct(@Valid Product product, BindingResult result) {
         if (result.hasErrors()) {
             return "add-product";
         }
-        getRepo().save(product);
-        //model.addAttribute("products", getRepo().findAll());
+        getProductRepo().save(product);
         return "redirect:/admin";//"product-management";
     }
 
+    /**
+     *
+     * @param id of edit product
+     * @param model modal
+     * @return update-product form
+     */
     @GetMapping("/admin/edit/{id}")
     public String editProduct(@PathVariable("id") long id, Model model) {
-
-        Product product = getRepo().findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid product Id:" + id));
-
-        // the name "user"  is bound to the VIEW
+        Product product = getProductRepo().findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid product Id:" + id));
         model.addAttribute("product", product);
         return "update-product";
     }
 
+    /**
+     *
+     * @param id of product to update
+     * @param product input details to update
+     * @param result of validations inputs
+     * @return update-product form if not valid or redirect:/admin - product-management page
+     */
     @PostMapping("/admin/update/{id}")
-    public String updateProduct(@PathVariable("id") long id, @Valid Product product, BindingResult result, Model model) {
+    public String updateProduct(@PathVariable("id") long id, @Valid Product product, BindingResult result) {
         if (result.hasErrors()) {
             product.setId(id);
             return "update-product";
         }
-        getRepo().save(product);
+        getProductRepo().save(product);
         //model.addAttribute("products", getRepo().findAll());
         return "redirect:/admin";//"product-management";
     }
 
+    /**
+     *
+     * @param id froduct for delete from DB
+     * @return "redirect:/admin" after deleted
+     */
     @PostMapping("/admin/delete")
-    public String deleteProduct(@RequestParam("id") long id, Model model) {
-
-        Product product = getRepo()
+    public String deleteProduct(@RequestParam("id") long id) {
+        Product product = getProductRepo()
                 .findById(id)
                 .orElseThrow(
                         () -> new IllegalArgumentException("Invalid product Id:" + id)
                 );
-        getRepo().delete(product);
-     //   model.addAttribute("products", getRepo().findAll());
+        getProductRepo().delete(product);
         return "redirect:/admin";//"product-management";
     }
 
-
-
-
-    @Override
-    public String toString() {
-        return "fdsfa";
-    }
-
-    }
+}

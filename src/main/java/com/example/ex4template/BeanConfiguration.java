@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.annotation.SessionScope;
 
 /**
- * create some beans witn various scopes using QUALIFIERS (method names)
+ * create ShoppingBasket beans with SessionScope
  */
 @Configuration
 public class BeanConfiguration {

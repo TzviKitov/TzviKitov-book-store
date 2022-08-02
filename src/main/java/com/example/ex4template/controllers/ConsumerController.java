@@ -9,23 +9,24 @@ import com.example.ex4template.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import javax.annotation.Resource;
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Customer care: store, shopping basket and payment
+ */
 @Controller
 public class ConsumerController {
+    static final String amountMessage="The payment in the amount ";
+    static final String successPeyMessage="$ was made successfully!";
+
     @Autowired
     private ProductRepository repository;
-    private ProductRepository getRepo() {
+    private ProductRepository getProductRepo() {
         return repository;
     }
 
@@ -38,98 +39,102 @@ public class ConsumerController {
     @Autowired
     private PurchaseRepository purchaseRepository;
 
+    /**
+     *
+     * @param model modal
+     * @return main store page
+     */
     @GetMapping("/")
-    public String main(Product product, Model model) {
-//        model.addAttribute("course", someProperty);
-
-        // the name "users"  is bound to the VIEW
-        model.addAttribute("products", getRepo().findFirst5ByOrderByDiscountDesc());
+    public String main( Model model) {
+        model.addAttribute("products", getProductRepo().findFirst5ByOrderByDiscountDesc());
         model.addAttribute("basketSize",shoppingBasket.size());
-
         return "index";
     }
 
+    /**
+     *
+     * @param partOfName part string input for searching
+     * @param model modal
+     * @return the store page  after filtering products
+     */
     @GetMapping("/search")
     public String productSearch(@RequestParam String partOfName, Model model){
        ////////////////need exception?
-        model.addAttribute("products", getRepo().findByNameContaining(partOfName));
+        model.addAttribute("products", getProductRepo().findByNameContaining(partOfName));
         model.addAttribute("basketSize",shoppingBasket.size());
         return "index";
     }
 
+    /**
+     *
+     * @param id product for added to basket
+     * @return redirect to main store page
+     */
     @PostMapping("/basket/add")
     public String addToBasket(@RequestParam("id") Long id) {
-//        if (id == null)/////////////////////////////////////////needed??????????????
-//            System.out.println("null product !");
-//        else
             shoppingBasket.add(id);
-        //model.addAttribute("basketSize",shoppingBasket.size());
         return "redirect:/";
     }
 
-
+    /**
+     * Displays the products in the shopping cart, which displays the products in the basket, the updated message and the total price of the products available at the current moment
+     * @param model modal
+     * @return shopping-basket page
+     */
     @GetMapping("/basket")
-    public String process(Model model) {
-        // we modify an application scoped bean
-        //appMessages.add("hello"); // just for demo
-        ArrayList<Product> products=new ArrayList<Product>();
-        Product product= new Product();
+    public String shoppingBasket(Model model) {
+        ArrayList<Product> products= new ArrayList<>();
+        Product product;
         double totalPrice=0;
         for (Long id: shoppingBasket.getIdProducts()) {
-            product=getRepo().findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid product Id:" + id));
+            product=getProductRepo().findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid product Id:" + id));
             products.add(product);
             if(product.getQuantity()>0)totalPrice+=(product.getPrice()- product.getPrice()*product.getDiscount()/100);
         }
         shoppingBasket.setTotalPrice(totalPrice);
         model.addAttribute("basketMessage",shoppingBasket.getPaymentMessage());
         model.addAttribute("shoppingBasket", products);
-        model.addAttribute("totalPrice", totalPrice);
+        model.addAttribute("totalPrice", String.format("%.2f", totalPrice));
         shoppingBasket.setPaymentMessage("");
-//        if((double)model.getAttribute("totalPrice")>0.00)
-//        System.out.println("111111");
-//        else         System.out.println("00000");
-
         return "shopping-basket";
     }
 
+    /**
+     * remove product 1 from the basket
+     * @param id of product
+     * @return redirect:/basket
+     */
     @PostMapping("/basket/remove")
     public String removeFromBasket(@RequestParam("id") Long id) {
         shoppingBasket.remove(id);
         return "redirect:/basket";
     }
 
+    /**
+     * empty the basket
+     * @return redirect:/basket
+     */
     @PostMapping("/basket/removeall")
-    public String emptyTheBaske() {
+    public String emptyTheBasket() {
         shoppingBasket.removeAll();
         return "redirect:/basket";
     }
 
     /**
-     *
-     * @return
-     * @throws Exception
+     *Handles payment for the products, in case a product is missing from the stock at the moment of payment, the payment will not be made and the basket will be displayed with appropriate messages. If all the products are in stock, the purchase will be approved, the product will be deducted from the stock, the product basket will be emptied and displayed with a success message about the purchase amount, and the purchase will be saved in the database
+     * @return Redirection to the shopping cart page after updating the message and the current amount on the shopping cart object
+     *  Exception in the event of an error in checking the inventory in the database, or in the event that the product is out of stock
      */
     @GetMapping("/basket/payment")
-    public String payment(Principal principal) throws Exception {
-        try {
-            // this transaction will fail and throw an exception
+    public String payment(Principal principal) {
+        try {    // this transaction will fail and throw an exception
             productService.updateQuantities(shoppingBasket.getIdProducts());
         } catch (Exception e) {
-            System.out.println(e.toString());
             shoppingBasket.setPaymentMessage(e.getMessage());
             return "redirect:/basket";
-//            model.addAttribute("message", "Sorry we could not perform your request!");
-        } finally {
-//            model.addAttribute("users", userService.getUsers());
         }
-        shoppingBasket.setPaymentMessage("The payment in the amount " + shoppingBasket.getTotalPrice() + "$ was made successfully!");
-        purchaseRepository.save(new Purchase(shoppingBasket.getTotalPrice(),principal.getName()));
-        return emptyTheBaske();//"redirect:/basket/removeall";
-       // Product product=getRepo().findById((long)6).orElseThrow(() -> new IllegalArgumentException("Invalid product Id:" + id));
-//      if((double)model.getAttribute("totalPrice")>0.00)
-//        return "redirect:/";
-//      else return "redirect:/basket";
+        shoppingBasket.setPaymentMessage(amountMessage + String.format("%.2f", shoppingBasket.getTotalPrice()) + successPeyMessage);
+        purchaseRepository.save(new Purchase(  shoppingBasket.getTotalPrice(),principal.getName()));
+        return emptyTheBasket();
     }
-
 }
-

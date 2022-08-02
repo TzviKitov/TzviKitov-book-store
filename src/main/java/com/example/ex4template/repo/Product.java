@@ -1,18 +1,7 @@
 package com.example.ex4template.repo;
 
-//import jdk.vm.ci.common.NativeImageReinitialize;
-import lombok.Builder;
-import lombok.NonNull;
-import net.bytebuddy.implementation.bind.annotation.Default;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.NotFound;
-import org.springframework.lang.NonNullFields;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import javax.persistence.*;
 import javax.validation.constraints.*;
-import java.net.URL;
-
 
 @Entity
 public class Product {
@@ -21,11 +10,8 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @NotEmpty(message = "Name is mandatory")
+    @NotBlank(message = "Name is mandatory")
     private String name;
-
-    //@Enumerated(EnumType.STRING)
-    //@ColumnDefault("'../resources/static/images/default_product_cover_image.jpg'")
 
     private String image;
 
@@ -45,14 +31,6 @@ public class Product {
     public Product() {
     }
 
-    public Product(String name, String image, int quantity, double price, double discount) {
-        this.name = name.trim();
-        this.image = image.trim();
-        this.quantity = quantity;
-        this.price = price;
-        this.discount = discount;
-    }
-
     public void setId(long id) {
         this.id = id;
     }
@@ -70,7 +48,7 @@ public class Product {
     }
 
     public void setImage(String image) {
-         this.image= image.isEmpty()? "/images/default_product_cover_image.jpg" :image;
+         this.image= image.isEmpty()? "/images/default_product_cover_image.jpg" :image.trim();
     }
 
     public String getImage() {

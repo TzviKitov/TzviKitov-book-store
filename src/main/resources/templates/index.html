@@ -25,9 +25,9 @@
 
 <!--            </button>-->
             <form class="form-inline" action="#" th:action="@{/search}">
-                <input class="form-control mr-sm-2 my-1" type="search" name="partOfName" placeholder="Search"
+                <input class="form-control mr-sm-2 my-1" type="search" name="partOfName" required="true" placeholder="Search"
                        aria-label="Search">
-                <button class="btn btn-outline-primary my-sm-0 my-1" type="submit">Search</button>
+                <button class="btn btn-outline-primary my-sm-0 my-1" type="submit" >Search Products</button>
             </form>
 
             <div  sec:authorize="isAuthenticated()">
@@ -55,7 +55,7 @@
                                     <b class="card-title" th:text="${product.name}"></b>
                                     <p class="card-text" th:text="${product.price}+'$'"></p>
                                     <!--                            <a class="btn btn-primary" th:href="@{/basket/add(id=${product.id})}">add to basket</a>-->
-                                    <form action="#" th:action="@{/basket/add}" th:object="${produc}" method="post">
+                                    <form action="#" th:action="@{/basket/add}" th:object="${product}" method="post">
                                         <input type="hidden" name="id" th:value="${product.id}">
                                         <input class="btn btn-primary" type="submit" value="Add to basket"/>
                                     </form>

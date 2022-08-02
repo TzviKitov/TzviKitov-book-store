@@ -1,10 +1,7 @@
 package com.example.ex4template.listeners;
 
-
-
 import com.example.ex4template.beans.ShoppingBasket;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.Resource;
 import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
@@ -24,27 +21,24 @@ public class SessionListenerCounter implements HttpSessionListener {
     @Resource(name = "ShoppingBasket")
     private ShoppingBasket shoppingBasket;
 
-
     public SessionListenerCounter() {
         super();
         activeSessions = new AtomicInteger();
     }
 
-    public int getTotalActiveSession() {
-        return activeSessions.get();
-    }
-
-
+    /**
+     *
+     * @param event sessionCreated
+     */
     public void sessionCreated(final HttpSessionEvent event) {
         activeSessions.incrementAndGet();
         System.out.println("SessionListenerCounter +++ Total active session are " + activeSessions.get());
-        // example of application bean accessed from session listener
-
-
     }
-//@Override
 
-
+    /**
+     *
+     * @param event sessionDestroyed
+     */
     public void sessionDestroyed(final HttpSessionEvent event) {
         activeSessions.decrementAndGet();
         System.out.println("SessionListenerCounter --- Total active session are " + activeSessions.get());

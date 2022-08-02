@@ -57,6 +57,7 @@ public class Purchase {
         return "Purchase{" +
                 "timestamp='" + timestamp +
                 ", amount=" + amount +
+                ",purchaserName="+ purchaserName+
                 '}';
     }
 
